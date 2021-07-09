@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.js" integrity="sha512-1lagjLfnC1I0iqH9plHYIUq3vDMfjhZsLy9elfK89RBcpcRcx4l+kRJBSnHh2Mh6kLxRHoObD1M5UTUbgFy6nA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js" integrity="sha512-XKa9Hemdy1Ui3KSGgJdgMyYlUg1gM+QhL6cnlyTe2qzMCYm4nAZ1PsVerQzTTXzonUR+dmswHqgJPuwCq1MaAg==" crossorigin="anonymous"></script>
+    <title>SAML Test</title>
+  </head>
+  <body class="container">
+    <form id="saml">
+      <h1>SAML Result</h1>
+      <div class="form-group">
+        <label for="relayState">RelayState</label>
+        <input type="text" class="form-control" name="relayState" value="<%= RelayState%>" id="relayState" aria-describedby="relayStateHelp" readOnly>
+        <small id="relayStateHelp" class="form-text text-muted">Relay-State-Parameter, not Encoded</small>
+      </div>
+      <div class="form-group">
+        <label for="response">SAMLResponse</label>
+        <pre>
+<%= SAMLResponse %>
+        <pre>
+        <small id="responseHelp" class="form-text text-muted">SAML-Response, not Encoded</small>
+      </div>
+    </form>
+  </body>
+</html>

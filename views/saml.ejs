@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.60.0/codemirror.min.css" integrity="sha512-xIf9AdJauwKIVtrVRZ0i4nHP61Ogx9fSRAkCLecmE2dL/U8ioWpDvFCAy4dcfecN72HHB9+7FfQj3aiO68aaaw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.60.0/codemirror.min.js" integrity="sha512-hc0zo04EIwTzKLvp2eycDTeIUuvoGYYmFIjYx7DmfgQeZPC5N27sPG2wEQPq8d8fCTwuguLrI1ffatqxyTbHJw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.60.0/mode/xml/xml.min.js" integrity="sha512-XPih7uxiYsO+igRn/NA2A56REKF3igCp5t0W1yYhddwHsk70rN1bbbMzYkxrvjQ6uk+W3m+qExHIJlFzE6m5eg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.js" integrity="sha512-1lagjLfnC1I0iqH9plHYIUq3vDMfjhZsLy9elfK89RBcpcRcx4l+kRJBSnHh2Mh6kLxRHoObD1M5UTUbgFy6nA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js" integrity="sha512-XKa9Hemdy1Ui3KSGgJdgMyYlUg1gM+QhL6cnlyTe2qzMCYm4nAZ1PsVerQzTTXzonUR+dmswHqgJPuwCq1MaAg==" crossorigin="anonymous"></script>
+    <title>SAML Test</title>
+  </head>
+  <body class="container">
+    <form id="saml">
+      <h1>SAML Test</h1>
+      <div class="form-group">
+        <label for="target">Target Server</label>
+        <input placeholder="http://" type="url" class="form-control" name="target" id="target" aria-describedby="targetHelp" required>
+        <small id="targetHelp" class="form-text text-muted">URL of the Identity Server</small>
+     </div>
+      <div class="form-group">
+        <label for="relayState">RelayState</label>
+        <input type="text" class="form-control" name="relayState" id="relayState" aria-describedby="relayStateHelp">
+        <small id="relayStateHelp" class="form-text text-muted">Relay-State-Parameter, not Encoded</small>
+      </div>
+      <div class="form-group">
+        <label for="authN">AuthnRequest</label>
+        <textarea class="form-control" id="authN" name="authN" aria-describedby="authNHelp"></textarea>
+        <small id="authNHelp" class="form-text text-muted">AuthN-Request, not Encoded. You can use variables like $(TIMESTAMP} for current time or ${ACS} for the assertion consumer URL of this test client</small>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+      //Start CodeMirror-Editor for authN-Request
+      let authNEditor = CodeMirror.fromTextArea(document.getElementById("authN"));
+  
+      //Special logic for saml form submit
+      let samlForm  = document.getElementById('saml');
+      samlForm.addEventListener('submit', (event) => {
+        //Never submit the actual form
+        event.preventDefault();
+
+        //Get the data as need to be send in SAML Request
+        let target = samlForm.elements['target'].value;
+        let relayState = btoa(samlForm.elements['relayState'].value);
+        let samlRequest = authNEditor.getValue();
+        samlRequest = samlRequest.replace("${TIMESTAMP}", (new Date()).toISOString());
+        samlRequest = samlRequest.replace("${ACS}", document.URL.substr(0,document.URL.lastIndexOf('/')) + "/acs.html");
+        console.log(samlRequest);
+        samlRequest = btoa(samlRequest);
+
+        console.log(samlRequest);
+
+        //format the input data in a new form
+        let formatedForm = document.createElement('form');
+        formatedForm.method = 'POST';
+        formatedForm.action = target;
+        let relayStateField = document.createElement('input');
+        relayStateField.type = 'hidden';
+        relayStateField.name = "RelayState";
+        relayStateField.value = relayState;
+        formatedForm.appendChild(relayStateField);
+        let samlRequestField = document.createElement('input');
+        samlRequestField.type = 'hidden';
+        samlRequestField.name = "SAMLRequest";
+        samlRequestField.value = samlRequest;
+        formatedForm.appendChild(samlRequestField);
+  
+        //Submit new form 
+        document.body.appendChild(formatedForm);
+        formatedForm.submit();
+      });
+
+      //Set initial values
+      authNEditor.setValue(`<?xml version="1.0"?>
+<saml2p:AuthnRequest 
+    xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" 
+    xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" 
+    Version="2.0" 
+    IssueInstant="\${TIMESTAMP}"
+    Destination="https://example.com/test" 
+    AssertionConsumerServiceURL="\${ACS}">
+    <saml2:Issuer>https://example.com/test</saml2:Issuer>
+    <saml2p:NameIDPolicy 
+        Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" 
+        AllowCreate="true" />
+</saml2p:AuthnRequest>`);
+      samlForm.elements['target'].value="https://samltest.id/saml/idp";
+    </script>
+  </body>
+</html>
