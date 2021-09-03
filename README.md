@@ -1,7 +1,6 @@
-# SAML Test
+# SP Test
 
-saml-test is a simple test client for SAML IDPs. You can send any SAML assertions from within a browser and (optionally) receive the responses from the IDP
-
+sp-test is a simple test client for IDPs. It can be used with SAML or OIDC. You can send any SAML assertions or OIDC AuthenticationRequest from within a browser and (optionally) receive the responses from the IDP
 
 ## Installation
 Use npm to install dependencies
@@ -15,10 +14,10 @@ npm install
 Start the project using
 
 ```bash
-npm start
+export PORT=3001 && npm start
 ```
 
-and access the server at [localhost](http://localhost:8080).
+and access the server at [localhost](http://localhost:3000).
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

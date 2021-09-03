@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.js" integrity="sha512-1lagjLfnC1I0iqH9plHYIUq3vDMfjhZsLy9elfK89RBcpcRcx4l+kRJBSnHh2Mh6kLxRHoObD1M5UTUbgFy6nA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js" integrity="sha512-XKa9Hemdy1Ui3KSGgJdgMyYlUg1gM+QhL6cnlyTe2qzMCYm4nAZ1PsVerQzTTXzonUR+dmswHqgJPuwCq1MaAg==" crossorigin="anonymous"></script>
+    <title>SP-Test</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">SP-Test</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/oidc">OIDC<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/clientCredentials">OIDC ClientCredentials<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/saml">SAML<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/lizzyTheLizard/sp-test">Source</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <form id="oidc">
+        <h1>OIDC Test</h1>
+        <div class="form-group">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="type" id="type1" value="code" checked>
+            <label class="form-check-label" for="type1">
+              Authorization Code Flow
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="type" id="type2" value="id_token token">
+            <label class="form-check-label" for="type2">
+              Implicit Flow
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="authEndpoint">Auth Endpoint</label>
+          <input type="url" class="form-control" name="authEndpoint" id="authEndpoint" required>
+        </div>
+        <div class="form-group">
+          <label for="clientId">Client ID</label>
+          <input type="text" class="form-control" name="clientId" id="clientId" required>
+        </div>
+        <div class="form-group">
+          <label for="">Scope</label>
+          <input type="text" value="openid profile email" class="form-control" name="scope" id="scope" aria-describedby="scopeHelp">
+          <small id="scopeHelp" class="form-text text-muted">Multiple scopes must be seperated by a space</small>
+        </div>
+        <div class="form-group">
+          <label for="state">State</label>
+          <input type="text" class="form-control" name="state" id="state" aria-describedby="stateHelp">
+          <small id="stateHelp" class="form-text text-muted">Additional State, will be returned to the client</small>
+        </div>
+        <div class="form-group">
+          <label for="nonce">Nonce</label>
+          <input type="text" class="form-control" name="nonce" id="nonce" aria-describedby="nonceHelp">
+          <small id="stateHelp" class="form-text text-muted">AString value used to associate a Client session with an ID Token, should be random</small>
+        </div>
+        <div class="form-group">
+          <label for="redirect">Redirect URI</label>
+          <input type="text" value="${CONSUMER}" class="form-control" name="redirect" id="redirect" aria-describedby="redirectHelp" required>
+          <small id="redirectHelp" class="form-text text-muted">Redirect URI, by default this application</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+
+    <script>
+
+
+      let oidcForm  = document.getElementById('oidc');
+      oidcForm.elements['nonce'].value = Math.random().toString(36);
+
+      oidcForm.addEventListener('submit', (event) => {
+        //Never submit the actual form
+        event.preventDefault();
+
+        //Get the data as need to be send in OIDC Request
+        let authEndpoint = oidcForm.elements['authEndpoint'].value;
+        let clientId = oidcForm.elements['clientId'].value;
+        let scope = oidcForm.elements['scope'].value;
+        let state = oidcForm.elements['state'].value;
+        let redirect = oidcForm.elements['redirect'].value;
+        let type = oidcForm.elements['type'].value;
+        let nonce = oidcForm.elements['nonce'].value;
+        redirect = redirect.replace("${CONSUMER}", document.URL.substr(0,document.URL.lastIndexOf('/')) + "/consumer.html");
+
+        const url = new URL(authEndpoint);
+        url.searchParams.set('response_type', type);
+        url.searchParams.set('scope', scope);
+        url.searchParams.set('state', state);
+        url.searchParams.set('redirect_uri', redirect);
+        url.searchParams.set('client_id', clientId);
+        url.searchParams.set('nonce', nonce);
+
+        window.location.href = url.toString();
+      });
+    </script>
+  </body>
+</html>

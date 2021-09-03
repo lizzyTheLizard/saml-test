@@ -10,28 +10,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.60.0/mode/xml/xml.min.js" integrity="sha512-XPih7uxiYsO+igRn/NA2A56REKF3igCp5t0W1yYhddwHsk70rN1bbbMzYkxrvjQ6uk+W3m+qExHIJlFzE6m5eg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.js" integrity="sha512-1lagjLfnC1I0iqH9plHYIUq3vDMfjhZsLy9elfK89RBcpcRcx4l+kRJBSnHh2Mh6kLxRHoObD1M5UTUbgFy6nA==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js" integrity="sha512-XKa9Hemdy1Ui3KSGgJdgMyYlUg1gM+QhL6cnlyTe2qzMCYm4nAZ1PsVerQzTTXzonUR+dmswHqgJPuwCq1MaAg==" crossorigin="anonymous"></script>
-    <title>SAML Test</title>
+    <title>SP-Test</title>
   </head>
-  <body class="container">
-    <form id="saml">
-      <h1>SAML Test</h1>
-      <div class="form-group">
-        <label for="target">Target Server</label>
-        <input placeholder="http://" type="url" class="form-control" name="target" id="target" aria-describedby="targetHelp" required>
-        <small id="targetHelp" class="form-text text-muted">URL of the Identity Server</small>
-     </div>
-      <div class="form-group">
-        <label for="relayState">RelayState</label>
-        <input type="text" class="form-control" name="relayState" id="relayState" aria-describedby="relayStateHelp">
-        <small id="relayStateHelp" class="form-text text-muted">Relay-State-Parameter, not Encoded</small>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">SP-Test</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/oidc">OIDC<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/clientCredentials">OIDC ClientCredentials<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/saml">SAML<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/lizzyTheLizard/sp-test">Source</a>
+          </li>
+        </ul>
       </div>
-      <div class="form-group">
-        <label for="authN">AuthnRequest</label>
-        <textarea class="form-control" id="authN" name="authN" aria-describedby="authNHelp"></textarea>
-        <small id="authNHelp" class="form-text text-muted">AuthN-Request, not Encoded. You can use variables like $(TIMESTAMP} for current time or ${ACS} for the assertion consumer URL of this test client</small>
+    </nav>
+    <div class="container">
+      <form id="saml">
+        <h1>SAML Test</h1>
+        <div class="form-group">
+          <label for="target">Target Server</label>
+          <input placeholder="http://" type="url" class="form-control" name="target" id="target" aria-describedby="targetHelp" required>
+          <small id="targetHelp" class="form-text text-muted">URL of the Identity Server</small>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+        <div class="form-group">
+          <label for="relayState">RelayState</label>
+          <input type="text" class="form-control" name="relayState" id="relayState" aria-describedby="relayStateHelp">
+          <small id="relayStateHelp" class="form-text text-muted">Relay-State-Parameter, not Encoded</small>
+        </div>
+        <div class="form-group">
+          <label for="authN">AuthnRequest</label>
+          <textarea class="form-control" id="authN" name="authN" aria-describedby="authNHelp"></textarea>
+          <small id="authNHelp" class="form-text text-muted">AuthN-Request, not Encoded. You can use variables like $(TIMESTAMP} for current time or ${ACS} for the assertion consumer URL of this test client</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
 
     <script>
       //Start CodeMirror-Editor for authN-Request
