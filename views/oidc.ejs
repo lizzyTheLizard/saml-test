@@ -54,6 +54,11 @@
           <input type="url" class="form-control" name="authEndpoint" id="authEndpoint" required>
         </div>
         <div class="form-group">
+          <label for="tokenEndpoint">Token Endpoint</label>
+          <input type="url" class="form-control" name="tokenEndpoint" id="tokenEndpoint" aria-describedby="tokenEndpointHelp">
+          <small id="tokenEndpointHelp" class="form-text text-muted">Only needed tor code flow</small>
+        </div>
+        <div class="form-group">
           <label for="clientId">Client ID</label>
           <input type="text" class="form-control" name="clientId" id="clientId" required>
         </div>
@@ -73,9 +78,9 @@
           <small id="stateHelp" class="form-text text-muted">AString value used to associate a Client session with an ID Token, should be random</small>
         </div>
         <div class="form-group">
-          <label for="redirect">Redirect URI</label>
-          <input type="text" value="${CONSUMER}" class="form-control" name="redirect" id="redirect" aria-describedby="redirectHelp" required>
-          <small id="redirectHelp" class="form-text text-muted">Redirect URI, by default this application</small>
+          <label for="redirectUri">Redirect URI</label>
+          <input type="text" value="${CONSUMER}" class="form-control" name="redirectUri" id="redirectUri" aria-describedby="redirectUriHelp" required>
+          <small id="redirectUriHelp" class="form-text text-muted">Redirect URI, by default this application</small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
@@ -93,22 +98,28 @@
 
         //Get the data as need to be send in OIDC Request
         let authEndpoint = oidcForm.elements['authEndpoint'].value;
+        let tokenEndpoint = oidcForm.elements['tokenEndpoint'].value;
         let clientId = oidcForm.elements['clientId'].value;
         let scope = oidcForm.elements['scope'].value;
         let state = oidcForm.elements['state'].value;
-        let redirect = oidcForm.elements['redirect'].value;
+        let redirectUri = oidcForm.elements['redirectUri'].value;
         let type = oidcForm.elements['type'].value;
         let nonce = oidcForm.elements['nonce'].value;
-        redirect = redirect.replace("${CONSUMER}", document.URL.substr(0,document.URL.lastIndexOf('/')) + "/consumer.html");
+        redirectUri = redirectUri.replace("${CONSUMER}", document.URL.substr(0,document.URL.lastIndexOf('/')) + "/consumer.html");
 
+        //Store token endpoint and client as we need it later
+        localStorage.setItem('tokenEndpoint', tokenEndpoint);
+        localStorage.setItem('clientId', clientId);
+        localStorage.setItem('redirectUri', redirectUri);
+
+        //Forward to the actual URL
         const url = new URL(authEndpoint);
         url.searchParams.set('response_type', type);
         url.searchParams.set('scope', scope);
         url.searchParams.set('state', state);
-        url.searchParams.set('redirect_uri', redirect);
+        url.searchParams.set('redirect_uri', redirectUri);
         url.searchParams.set('client_id', clientId);
         url.searchParams.set('nonce', nonce);
-
         window.location.href = url.toString();
       });
     </script>

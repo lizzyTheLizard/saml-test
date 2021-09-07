@@ -60,7 +60,7 @@ app.use(express.static('views'))
 
 
 app.listen(port, () => {
-  console.log(`SAML test listening at http://localhost:${port}`)
+  console.log(`sp-test listening at http://localhost:${port}`)
 });
 
 

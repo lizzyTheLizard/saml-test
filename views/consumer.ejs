@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js" integrity="sha512-XKa9Hemdy1Ui3KSGgJdgMyYlUg1gM+QhL6cnlyTe2qzMCYm4nAZ1PsVerQzTTXzonUR+dmswHqgJPuwCq1MaAg==" crossorigin="anonymous"></script>
     <title>SAML Test</title>
   </head>
-  <body">
+  <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">SP-Test</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,32 +35,10 @@
     <div class="container">
       
       <form id="oidc">
-        <h1 class="oidcCode">OIDC Token Request</h1>
-        <div class="form-group oidcCode">
-          <label for="code">Code</label>
-          <input type="text" class="form-control" name="code" id="code" readOnly>
-        </div>
-        <div class="form-group oidcCode">
-          <label for="redirectUri">Redirect URI</label>
-          <input type="url" class="form-control" name="redirectUri" id="redirectUri" required>
-        </div>
-        <div class="form-group oidcCode">
-          <label for="clientId">Client Id</label>
-          <input type="text" class="form-control" name="clientId" id="clientId" required>
-        </div>
-        <div class="form-group oidcCode">
-          <label for="tokenEndpoint">Token Endpoint</label>
-          <input type="url" class="form-control" name="tokenEndpoint" id="tokenEndpoint" required>
-        </div>
-        <div class="form-group oidcCode">
-          <label for="state1">State</label>
-          <input type="text" class="form-control" name="state1" id="state1" readOnly>
-        </div>
-        <button type="submit" class="btn btn-primary oidcCode">Submit</button>
         <h1 class="oidcToken">OIDC Result</h1>
         <div class="form-group oidcToken">
-          <label for="state2">State</label>
-          <input type="text" class="form-control" name="state2" id="state2" readOnly>
+          <label for="state">State</label>
+          <input type="text" class="form-control" name="state" id="state" readOnly>
         </div>
         <div class="form-group oidcToken">
           <label for="idToken">ID Token</label>
@@ -108,21 +86,10 @@
       function updateVisabilities(){
         //Depending on type, hide different parts of the UI
         //Done here in a quite ugly way...
+
         var selects = document.getElementsByClassName("oidcError");
         for(var i =0, il = selects.length;i<il;i++){
           if(oidcForm.elements['error'].value) {
-            console.log('Remove d-none', selects[i])
-            selects[i].className = selects[i].className.replaceAll('d-none', '');
-          } else {
-            console.log('Add d-none', selects[i])
-            selects[i].className += " d-none";
-          }
-          console.log(selects[i].className)
-        }
-
-        var selects = document.getElementsByClassName("oidcCode");
-        for(var i =0, il = selects.length;i<il;i++){
-          if(oidcForm.elements['code'].value) {
             selects[i].className = selects[i].className.replaceAll('d-none', '');
           } else {
             selects[i].className += " d-none";
@@ -145,39 +112,7 @@
           } else {
             selects[i].className += " d-none";
           }
-        }  
-      }
-
-      function tokenRequest(){
-
-        //Get the data as need to be send in OIDC Request
-        let tokenEndpoint = oidcForm.elements['tokenEndpoint'].value;
-        let code = oidcForm.elements['code'].value;
-        let redirectUri = oidcForm.elements['redirectUri'].value;
-        let client_id = oidcForm.elements['clientId'].value;
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", tokenEndpoint, true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send("grant_type=authorization_code&code="+ code + "&client_id="+client_id+"&redirect_uri=" + redirectUri);
-        xhr.onload = function() {
-          var data = JSON.parse(this.responseText);
-          console.log(data); 
-
-          oidcForm.elements['error'].value = data.error ?? null;
-          oidcForm.elements['errorDescription'].value = data.error_description ?? null;
-          oidcForm.elements['errorUri'].value = data.error_uri ?? null;
-          oidcForm.elements['idToken'].value = data.id_token ?? null;
-          oidcForm.elements['refreshToken'].value = data.refresh_token ?? null;
-          oidcForm.elements['accessToken'].value = data.access_token ?? null;
-          oidcForm.elements['tokenType'].value = data.token_type ?? null;
-          oidcForm.elements['expiresIn'].value = data.expires_in ?? null;
-          document.getElementById('accessTokenLink').href = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['accessToken'].value;
-          document.getElementById('idTokenLink').href = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['idToken'].value;
-          document.getElementById('refreshTokenLink').href  = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['refreshToken'].value;
-
-          updateVisabilities();
-        };
+        }              
       }
 
       //Check if return is hash (common with implicit flow or not)
@@ -189,9 +124,7 @@
 
       //Parse URL
       var url = new URL(window.location.href);
-      oidcForm.elements['state1'].value = url.searchParams.get("state");
-      oidcForm.elements['state2'].value = url.searchParams.get("state");
-      oidcForm.elements['code'].value = url.searchParams.get("code");
+      oidcForm.elements['state'].value = url.searchParams.get("state");
       oidcForm.elements['error'].value = url.searchParams.get("error");
       oidcForm.elements['errorDescription'].value = url.searchParams.get("error_description");
       oidcForm.elements['errorUri'].value = url.searchParams.get("error_uri");
@@ -199,20 +132,41 @@
       oidcForm.elements['accessToken'].value = url.searchParams.get("access_token");
       oidcForm.elements['tokenType'].value = url.searchParams.get("token_type");
       oidcForm.elements['expiresIn'].value = url.searchParams.get("expires_in");
-      oidcForm.elements['redirectUri'].value = url.origin + url.pathname;
       document.getElementById('accessTokenLink').href = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['accessToken'].value;
       document.getElementById('idTokenLink').href = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['idToken'].value;
       document.getElementById('refreshTokenLink').href  = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['refreshToken'].value;
 
-      updateVisabilities();
+      //If there is a code, make a token request
+      if(url.searchParams.get("code")) {
+        //Get the data as need to be send in OIDC Request
+        let tokenEndpoint = localStorage.getItem('tokenEndpoint');
+        let code = url.searchParams.get("code");
+        let redirectUri = localStorage.getItem('redirectUri');
+        let clientId = localStorage.getItem('clientId');
 
-
-      // The form for submitting the code request
-      oidcForm.addEventListener('submit', (event) => {
-        //Never submit the actual form
-        event.preventDefault();
-        tokenRequest();
-      });
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", tokenEndpoint, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send("grant_type=authorization_code&code="+ code + "&client_id="+clientId+"&redirect_uri=" + redirectUri);
+        xhr.onload = function() {
+          var data = JSON.parse(this.responseText);
+          oidcForm.elements['error'].value = data.error ?? null;
+          oidcForm.elements['errorDescription'].value = data.error_description ?? null;
+          oidcForm.elements['errorUri'].value = data.error_uri ?? null;
+          oidcForm.elements['idToken'].value = data.id_token ?? null;
+          oidcForm.elements['refreshToken'].value = data.refresh_token ?? null;
+          oidcForm.elements['accessToken'].value = data.access_token ?? null;
+          oidcForm.elements['tokenType'].value = data.token_type ?? null;
+          oidcForm.elements['expiresIn'].value = data.expires_in ?? null;
+          document.getElementById('accessTokenLink').href = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['accessToken'].value;
+          document.getElementById('idTokenLink').href = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['idToken'].value;
+          document.getElementById('refreshTokenLink').href  = "https://jwt.io/#debugger-io?token=" + oidcForm.elements['refreshToken'].value;
+          updateVisabilities();
+        };
+      } else {
+        updateVisabilities();
+      }
+  
     </script>
   </body>
 </html>
